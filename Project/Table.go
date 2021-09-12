@@ -2,12 +2,16 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
 
+var lock1 sync.Mutex
+var lock2 sync.Mutex
+
 func main() {
+
 	phi1 := new(Philosopher)
-	phi1.output = make(chan int)
 	phi2 := new(Philosopher)
 	phi3 := new(Philosopher)
 	phi4 := new(Philosopher)
@@ -47,17 +51,11 @@ func main() {
 	makeChanFork(fork4)
 	makeChanFork(fork5)
 
-	go eat(phi1)
-	go eat(phi2)
-	go eat(phi3)
-	go eat(phi4)
-	go eat(phi5)
-
-	go run(fork1, phi1, phi2)
-	go run(fork2, phi3, phi2)
-	go run(fork3, phi3, phi4)
-	go run(fork4, phi5, phi4)
-	go run(fork5, phi1, phi5)
+	go eat(phi1, fork1, fork5)
+	go eat(phi2, fork1, fork2)
+	go eat(phi3, fork2, fork3)
+	go eat(phi4, fork3, fork4)
+	go eat(phi5, fork4, fork5)
 
 	for {
 		go display(phi1, 1)
@@ -71,7 +69,6 @@ func main() {
 }
 
 func display(philosopher *Philosopher, number int) {
-	fmt.Println("Display")
 	fmt.Println("Philosopher ", number, " Eaten: ", philosopher.nrEaten)
 }
 
