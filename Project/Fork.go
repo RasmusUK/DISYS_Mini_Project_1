@@ -7,7 +7,13 @@ type Fork struct {
 	output chan int
 }
 
-func run(fork *Fork, phi1 *Philosopher, phi2 *Philosopher) {
+func run(fork *Fork) {
 	for {
+		<-fork.input
+		fork.inUse = true
+		fork.nrUsed++
+		fork.inUse = false
+		fork.output <- 1
 	}
+
 }
