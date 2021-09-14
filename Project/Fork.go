@@ -16,6 +16,7 @@ func run(fork *Fork) {
 		<-fork.input
 		fork.inUse = true
 		fork.nrUsed++
+		<-fork.input
 		fork.inUse = false
 		fork.output <- 1
 	}

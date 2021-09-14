@@ -1,15 +1,5 @@
 package main
 
-import (
-	"fmt"
-	"strconv"
-	"strings"
-	"sync"
-	"time"
-)
-
-var lock1 sync.Mutex
-var lock2 sync.Mutex
 var cn = make(chan int, 2)
 
 var phi1 = new(Philosopher)
@@ -38,12 +28,6 @@ func main() {
 	cn <- 1
 	cn <- 1
 
-	makeChanPhi(phi1)
-	makeChanPhi(phi2)
-	makeChanPhi(phi3)
-	makeChanPhi(phi4)
-	makeChanPhi(phi5)
-
 	makeChanFork(fork1)
 	makeChanFork(fork2)
 	makeChanFork(fork3)
@@ -62,38 +46,8 @@ func main() {
 	go run(fork4)
 	go run(fork5)
 
-	//go display()
-
 	for {
 	}
-
-}
-
-func display() {
-	for {
-		fmt.Printf("\r%s", toString())
-		time.Sleep(time.Millisecond * 1000)
-	}
-}
-
-func toString() string {
-	var line strings.Builder
-	line.WriteString(fmt.Sprintf("\nPhilopsher %d Number of times eaten: %d Status: %s", 1, phi1.nrEaten, strconv.FormatBool(phi1.eating)))
-	line.WriteString(fmt.Sprintf("\nPhilopsher %d Number of times eaten: %d Status: %s", 2, phi1.nrEaten, strconv.FormatBool(phi2.eating)))
-	line.WriteString(fmt.Sprintf("\nPhilopsher %d Number of times eaten: %d Status: %s", 3, phi1.nrEaten, strconv.FormatBool(phi3.eating)))
-	line.WriteString(fmt.Sprintf("\nPhilopsher %d Number of times eaten: %d Status: %s", 4, phi1.nrEaten, strconv.FormatBool(phi4.eating)))
-	line.WriteString(fmt.Sprintf("\nPhilopsher %d Number of times eaten: %d Status: %s", 5, phi1.nrEaten, strconv.FormatBool(phi5.eating)))
-	line.WriteString(fmt.Sprintf("\nFork %d Number of times used: %d", 1, fork1.nrUsed))
-	line.WriteString(fmt.Sprintf("\nFork %d Number of times used: %d", 2, fork2.nrUsed))
-	line.WriteString(fmt.Sprintf("\nFork %d Number of times used: %d", 3, fork3.nrUsed))
-	line.WriteString(fmt.Sprintf("\nFork %d Number of times used: %d", 4, fork4.nrUsed))
-	line.WriteString(fmt.Sprintf("\nFork %d Number of times used: %d", 5, fork5.nrUsed))
-	return line.String()
-}
-
-func makeChanPhi(philosopher *Philosopher) {
-	philosopher.output = make(chan int)
-	philosopher.input = make(chan int)
 }
 
 func makeChanFork(fork *Fork) {
