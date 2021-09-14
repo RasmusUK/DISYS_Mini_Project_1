@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -9,6 +10,7 @@ import (
 
 var lock1 sync.Mutex
 var lock2 sync.Mutex
+var cn = make(chan int, 2)
 
 var phi1 = new(Philosopher)
 var phi2 = new(Philosopher)
@@ -23,17 +25,18 @@ var fork4 = new(Fork)
 var fork5 = new(Fork)
 
 func main() {
-
-	phi1.prev = phi5
-	phi1.next = phi2
-	phi2.prev = phi1
-	phi2.next = phi3
-	phi3.prev = phi2
-	phi3.next = phi4
-	phi4.prev = phi3
-	phi4.next = phi5
-	phi5.prev = phi4
-	phi5.next = phi1
+	phi1.nr = 1
+	phi2.nr = 2
+	phi3.nr = 3
+	phi4.nr = 4
+	phi5.nr = 5
+	fork1.nr = 1
+	fork2.nr = 2
+	fork3.nr = 3
+	fork4.nr = 4
+	fork5.nr = 5
+	cn <- 1
+	cn <- 1
 
 	makeChanPhi(phi1)
 	makeChanPhi(phi2)
@@ -47,11 +50,11 @@ func main() {
 	makeChanFork(fork4)
 	makeChanFork(fork5)
 
-	go eat(phi1, fork1, fork5)
-	go eat(phi2, fork1, fork2)
-	go eat(phi3, fork2, fork3)
-	go eat(phi4, fork3, fork4)
-	go eat(phi5, fork4, fork5)
+	go eat(phi1, fork1, fork2)
+	go eat(phi2, fork2, fork3)
+	go eat(phi3, fork3, fork4)
+	go eat(phi4, fork4, fork5)
+	go eat(phi5, fork5, fork1)
 
 	go run(fork1)
 	go run(fork2)
@@ -59,7 +62,7 @@ func main() {
 	go run(fork4)
 	go run(fork5)
 
-	go display()
+	//go display()
 
 	for {
 	}
@@ -75,11 +78,11 @@ func display() {
 
 func toString() string {
 	var line strings.Builder
-	line.WriteString(fmt.Sprintf("\nPhilopsher %d Number of times eaten: %d", 1, phi1.nrEaten))
-	line.WriteString(fmt.Sprintf("\nPhilopsher %d Number of times eaten: %d", 2, phi2.nrEaten))
-	line.WriteString(fmt.Sprintf("\nPhilopsher %d Number of times eaten: %d", 3, phi3.nrEaten))
-	line.WriteString(fmt.Sprintf("\nPhilopsher %d Number of times eaten: %d", 4, phi4.nrEaten))
-	line.WriteString(fmt.Sprintf("\nPhilopsher %d Number of times eaten: %d", 5, phi5.nrEaten))
+	line.WriteString(fmt.Sprintf("\nPhilopsher %d Number of times eaten: %d Status: %s", 1, phi1.nrEaten, strconv.FormatBool(phi1.eating)))
+	line.WriteString(fmt.Sprintf("\nPhilopsher %d Number of times eaten: %d Status: %s", 2, phi1.nrEaten, strconv.FormatBool(phi2.eating)))
+	line.WriteString(fmt.Sprintf("\nPhilopsher %d Number of times eaten: %d Status: %s", 3, phi1.nrEaten, strconv.FormatBool(phi3.eating)))
+	line.WriteString(fmt.Sprintf("\nPhilopsher %d Number of times eaten: %d Status: %s", 4, phi1.nrEaten, strconv.FormatBool(phi4.eating)))
+	line.WriteString(fmt.Sprintf("\nPhilopsher %d Number of times eaten: %d Status: %s", 5, phi1.nrEaten, strconv.FormatBool(phi5.eating)))
 	line.WriteString(fmt.Sprintf("\nFork %d Number of times used: %d", 1, fork1.nrUsed))
 	line.WriteString(fmt.Sprintf("\nFork %d Number of times used: %d", 2, fork2.nrUsed))
 	line.WriteString(fmt.Sprintf("\nFork %d Number of times used: %d", 3, fork3.nrUsed))
