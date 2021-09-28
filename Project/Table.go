@@ -3,9 +3,9 @@ package main
 var cn = make(chan int, 2)
 
 func main() {
-
 	forks := BuildForks()
 	philosophers := BuildPhilosophers(forks)
+
 	cn <- 1
 	cn <- 1
 
