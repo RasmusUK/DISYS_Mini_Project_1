@@ -1,5 +1,10 @@
 package main
 
+import (
+	"fmt"
+	"time"
+)
+
 var cn = make(chan int, 2)
 
 func main() {
