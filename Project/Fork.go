@@ -20,24 +20,23 @@ func run(fork *Fork) {
 		<-fork.input
 		fork.inUse = true
 		fork.nrUsed++
-		updateStatus(fork)
+		go updateStatusFork(fork)
 		<-fork.input
 		fork.inUse = false
-		updateStatus(fork)
+		go updateStatusFork(fork)
 		fork.output <- 1
 	}
-
 }
 
-func updateStatus(fork *Fork) {
+func updateStatusFork(fork *Fork) {
 	if len(fork.status) != 0 {
 		<-fork.status
 	}
 	var status string
 	if fork.inUse {
-		status = fmt.Sprintf("Fork ", fork.nr, " is in use and has been used ", fork.nrUsed, " times")
+		status = fmt.Sprintf("Fork %d is in use and has been used %d times", fork.nr, fork.nrUsed)
 	} else {
-		status = fmt.Sprintf("Fork ", fork.nr, " is not in use and has been used ", fork.nrUsed, " times")
+		status = fmt.Sprintf("Fork %d is not in use and has been used %d times", fork.nr, fork.nrUsed)
 	}
 	fork.status <- status
 }
